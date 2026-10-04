@@ -1,0 +1,87 @@
+services:
+
+  discovery-server:
+    image: ecommerce-discovery-server:latest
+    container_name: ecommerce-discovery-server
+    ports:
+      - "8889:8889"
+    networks:
+      - ecommerce-network
+
+  auth-service:
+    image: ecommerce-auth-service:latest
+    container_name: ecommerce-auth-service
+    ports:
+      - "8702:8702"
+    depends_on:
+      - discovery-server
+    networks:
+      - ecommerce-network
+
+  product-service:
+    image: ecommerce-product-service:latest
+    container_name: ecommerce-product-service
+    ports:
+      - "8703:8703"
+    depends_on:
+      - discovery-server
+    networks:
+      - ecommerce-network
+
+  inventory-service:
+    image: ecommerce-inventory-service:latest
+    container_name: ecommerce-inventory-service
+    ports:
+      - "8704:8704"
+    depends_on:
+      - discovery-server
+    networks:
+      - ecommerce-network
+
+  order-service:
+    image: ecommerce-order-service:latest
+    container_name: ecommerce-order-service
+    ports:
+      - "8705:8705"
+    depends_on:
+      - discovery-server
+    networks:
+      - ecommerce-network
+
+  payment-service:
+    image: ecommerce-payment-service:latest
+    container_name: ecommerce-payment-service
+    ports:
+      - "8706:8706"
+    depends_on:
+      - discovery-server
+    networks:
+      - ecommerce-network
+
+  api-gateway:
+    image: ecommerce-api-gateway:latest
+    container_name: ecommerce-api-gateway
+    ports:
+      - "8101:8101"
+    depends_on:
+      - discovery-server
+      - auth-service
+      - product-service
+      - inventory-service
+      - order-service
+      - payment-service
+    networks:
+      - ecommerce-network
+
+  frontend:
+    image: ecommerce-frontend:latest
+    container_name: ecommerce-frontend
+    ports:
+      - "5174:80"
+    depends_on:
+      - api-gateway
+    networks:
+      - ecommerce-network
+networks:
+  ecommerce-network:
+    driver: bridge
